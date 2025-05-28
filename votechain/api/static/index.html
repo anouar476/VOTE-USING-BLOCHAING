@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoteChain - Système de Vote Électronique</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --secondary-color: #4cc9f0;
+            --accent-color: #560bad;
+            --success-color: #2ecc71;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+            --light-gray: #e9ecef;
+            --medium-gray: #ced4da;
+            --dark-gray: #6c757d;
+            --danger-color: #e63946;
+            --warning-color: #ff9f1c;
+            --info-color: #4895ef;
+        }
+        
+        body {
+            padding-top: 20px;
+            background-color: var(--light-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+        }
+        
+        .header h1 {
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 0;
+        }
+        
+        .card {
+            margin-bottom: 30px;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 20px 25px;
+        }
+        
+        .form-control, .form-select {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid var(--medium-gray);
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark-color);
+        }
+        
+        .candidate-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .candidate-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 14px 28px rgba(76, 201, 240, 0.2);
+            border-color: var(--secondary-color);
+        }
+        
+        .selected {
+            border: 3px solid var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .candidate-card .candidate-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--light-gray), var(--medium-gray));
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--dark-gray);
+        }
+        
+        .candidate-card h5 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+        
+        .candidate-card .party-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: var(--light-gray);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            color: var(--dark-gray);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.25);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--dark-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--primary-light);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background-color: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .real-time-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
+        .vote-count {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+        
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .progress-bar {
+            background-color: var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--dark-gray);
+            font-weight: 600;
+            padding: 15px 25px;
+            border-radius: 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background-color: transparent;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background-color: var(--primary-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .nav-tabs .nav-link:hover::after {
+            width: 80%;
+        }
+        
+        .alert {
+            padding: 16px 20px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .alert::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+        }
+        
+        .alert-success {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--success-color);
+        }
+        
+        .alert-success::before {
+            background-color: var(--success-color);
+        }
+        
+        .alert-danger {
+            background-color: rgba(230, 57, 70, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .alert-danger::before {
+            background-color: var(--danger-color);
+        }
+        
+        .alert-info {
+            background-color: rgba(72, 149, 239, 0.1);
+            color: var(--info-color);
+        }
+        
+        .alert-info::before {
+            background-color: var(--info-color);
+        }
+        
+        .alert-warning {
+            background-color: rgba(255, 159, 28, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .alert-warning::before {
+            background-color: var(--warning-color);
+        }
+        
+        .id-card {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .id-card::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+        }
+        
+        .id-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 15px;
+        }
+        
+        .id-photo {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        /* Styles pour la visualisation de la blockchain */
+        .blockchain-visualization {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            overflow-y: auto;
+            max-height: 600px;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .blockchain-visualization::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50px;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary-light), var(--secondary-color));
+            z-index: 0;
+            border-radius: 4px;
+        }
+        
+        .block {
+            border: 2px solid var(--primary-color);
+            border-radius: 16px;
+            background-color: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .block:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 28px rgba(67, 97, 238, 0.2);
+        }
+        
+        .block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .block-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .block-body {
+            padding: 15px;
+        }
+        
+        .block-hash {
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
+        .block-transactions {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            padding: 8px;
+        }
+        
+        .transaction {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+        
+        .hash-highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .proof-highlight {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .block-connection {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            color: #6c757d;
+            position: relative;
+        }
+        
+        .block-connection:before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background-color: #6c757d;
+            z-index: 1;
+        }
+        
+        .block-connection i {
+            background-color: white;
+            padding: 5px;
+            border-radius: 50%;
+            border: 2px solid #6c757d;
+            z-index: 2;
+        }
+        
+        .genesis-block {
+            border-color: #e74c3c;
+        }
+        
+        .genesis-block .block-header {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-link me-2"></i>VoteChain</h1>
+            <p class="lead">Système de Vote Électronique Sécurisé avec la Blockchain</p>
+            <div class="blockchain-info">
+                <span class="badge bg-primary me-2"><i class="fas fa-cube me-1"></i>Blocs: <span id="block-count">1</span></span>
+                <span class="badge bg-success me-2"><i class="fas fa-check-circle me-1"></i>Immutabilité</span>
+                <span class="badge bg-info me-2"><i class="fas fa-shield-alt me-1"></i>Cryptographie</span>
+                <span class="badge bg-warning"><i class="fas fa-users me-1"></i>Consensus</span>
+            </div>
+        </div>
+
+        <div class="alert alert-success" id="success-alert" style="display: none;" role="alert">
+            <i class="fas fa-check-circle me-2"></i> <span id="success-message">Opération réussie!</span>
+        </div>
+        <div class="alert alert-danger" id="error-alert" style="display: none;" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i> <span id="error-message">Une erreur s'est produite.</span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="vote-tab" data-bs-toggle="tab" data-bs-target="#vote" type="button" role="tab"><i class="fas fa-vote-yea me-1"></i>Voter</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab"><i class="fas fa-user-plus me-1"></i>S'inscrire</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="results-tab" data-bs-toggle="tab" data-bs-target="#results" type="button" role="tab"><i class="fas fa-chart-bar me-1"></i>Résultats</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="blockchain-tab" data-bs-toggle="tab" data-bs-target="#blockchain" type="button" role="tab"><i class="fas fa-cubes me-1"></i>Blockchain</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    <!-- Vote Tab -->
+                    <div class="tab-pane fade show active" id="vote" role="tabpanel">
+                        <h4 class="card-title">Voter pour un candidat</h4>
+                        <form id="vote-form">
+                            <div class="mb-3">
+                                <label for="voter-id" class="form-label">ID Votant (Hashé)</label>
+                                <input type="text" class="form-control" id="voter-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="private-key" class="form-label">Clé Privée</label>
+                                <textarea class="form-control" id="private-key" rows="3" required></textarea>
+                            </div>
+                            <h5>Sélectionnez un candidat</h5>
+                            <div id="candidates-list" class="row mb-3">
+                                <!-- Candidates will be loaded here -->
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="vote-button">Voter</button>
+                        </form>
+                    </div>
+
+                    <!-- Register Tab -->
+                    <div class="tab-pane fade" id="register" role="tabpanel">
+                        <h4 class="card-title"><i class="fas fa-user-plus me-2"></i>S'inscrire comme votant</h4>
+                        
+                        <div class="id-card mb-4">
+                            <div class="id-card-header">
+                                <h5><i class="fas fa-id-card me-2"></i>Carte d'Identité Électronique</h5>
+                                <div class="id-photo">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <p class="mb-1">Utilisez votre identité électronique pour participer au vote en toute sécurité.</p>
+                        </div>
+                        
+                        <form id="register-form">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="voter-name" class="form-label">Nom</label>
+                                    <input type="text" class="form-control" id="voter-name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="voter-surname" class="form-label">Prénom</label>
+                                    <input type="text" class="form-control" id="voter-surname" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="voter-id-number" class="form-label">Numéro de Carte d'Identité</label>
+                                    <input type="text" class="form-control" id="voter-id-number" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="voter-birthdate" class="form-label">Date de Naissance</label>
+                                    <input type="date" class="form-control" id="voter-birthdate" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="voter-email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="voter-email" required>
+                                <div class="form-text">Un code de vérification sera envoyé à cette adresse.</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="register-button">
+                                <i class="fas fa-user-check me-2"></i>Vérifier et s'inscrire
+                            </button>
+                        </form>
+                        
+                        <!-- Modal de vérification -->
+                        <div class="modal fade" id="verification-modal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Vérification d'identité</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Un code de vérification a été envoyé à votre email.</p>
+                                        <div class="mb-3">
+                                            <label for="verification-code" class="form-label">Code de vérification</label>
+                                            <input type="text" class="form-control" id="verification-code" placeholder="Entrez le code à 6 chiffres">
+                                        </div>
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle me-2"></i> Pour des besoins de test, vous pouvez passer cette étape.
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        <button type="button" class="btn btn-warning" id="skip-verification-btn">
+                                            <i class="fas fa-forward me-2"></i>Passer la vérification
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="verify-code-btn">Vérifier</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4" id="registration-result" style="display: none;">
+                            <div class="alert alert-info">
+                                <h5><i class="fas fa-check-circle me-2"></i>Identité vérifiée - Informations d'inscription</h5>
+                                <p><strong>Nom:</strong> <span id="confirmed-name"></span></p>
+                                <p><strong>Prénom:</strong> <span id="confirmed-surname"></span></p>
+                                <p><strong>ID Votant (Hashé):</strong> <span id="hashed-voter-id"></span></p>
+                                <div class="mb-3">
+                                    <label for="generated-private-key" class="form-label"><strong>Clé Privée:</strong></label>
+                                    <textarea class="form-control" id="generated-private-key" rows="5" readonly></textarea>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary" type="button" id="download-credentials">
+                                        <i class="fas fa-download me-2"></i>Télécharger mes informations d'identification
+                                    </button>
+                                </div>
+                                <div class="alert alert-warning mt-3">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>IMPORTANT:</strong> Sauvegardez votre clé privée en lieu sûr. Elle sera nécessaire pour voter.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Tab -->
+                    <div class="tab-pane fade" id="results" role="tabpanel">
+                        <h4 class="card-title"><i class="fas fa-chart-bar me-2"></i>Résultats de l'élection</h4>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <button id="refresh-results" class="btn btn-outline-primary">
+                                    <i class="fas fa-sync-alt me-2"></i>Rafraîchir manuellement
+                                </button>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="realtime-toggle" checked>
+                                <label class="form-check-label" for="realtime-toggle">Actualisation en temps réel</label>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="fas fa-chart-line me-2"></i>Statistiques de la Blockchain</h5>
+                                <div class="row text-center">
+                                    <div class="col-md-3 mb-3">
+                                        <div class="h2" id="stats-voters">0</div>
+                                        <div>Votants inscrits</div>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="h2" id="stats-votes">0</div>
+                                        <div>Transactions</div>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="h2" id="stats-blocks">1</div>
+                                        <div>Blocs dans la chaîne</div>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="h2">PoW</div>
+                                        <div>Consensus</div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <i class="fas fa-info-circle me-2"></i>La blockchain garantit l'immuabilité et la transparence des votes.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="results-container" class="mb-3">
+                            <!-- Results will be loaded here -->
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Chargement...</span>
+                                </div>
+                                <p class="mt-2">Chargement des résultats...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Historique des votes</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Heure</th>
+                                                <th>Bloc #</th>
+                                                <th>ID Votant (hashé)</th>
+                                                <th>Candidat</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="votes-history">
+                                            <!-- Votes history will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blockchain Tab -->
+                    <div class="tab-pane fade" id="blockchain" role="tabpanel">
+                        <h4 class="card-title"><i class="fas fa-cubes me-2"></i>Explorer la Blockchain</h4>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <button class="btn btn-primary" id="refresh-blockchain"><i class="fas fa-sync-alt me-2"></i>Rafraîchir la blockchain</button>
+                            </div>
+                            <div>
+                                <span class="badge bg-primary"><i class="fas fa-cube me-1"></i>Nombre de blocs: <span id="blockchain-length">1</span></span>
+                            </div>
+                        </div>
+                        
+                        <div class="blockchain-visualization">
+                            <!-- Les blocs seront ajoutés ici dynamiquement -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Base URL for API
+        const BASE_URL = 'http://localhost:5000';
+        let selectedCandidate = null;
+        let realtimeUpdateInterval = null;
+        
+        // Variables globales pour suivre les votes et l'état de l'élection
+        const electionState = {
+            registeredVoters: 0,
+            votesCast: 0,
+            blockchainLength: 1,
+            candidateVotes: {
+                'candidate1': 0,
+                'candidate2': 0,
+                'candidate3': 0
+            },
+            voteHistory: [],
+            blockchain: [] // Nouvelle propriété pour stocker la blockchain
+        };
+        
+        // Données de candidats pour la démo
+        const CANDIDATES = [
+            { id: 'candidate1', name: 'Marie Dupont', party: 'Parti A', color: '#3498db' },
+            { id: 'candidate2', name: 'Jean Martin', party: 'Parti B', color: '#2ecc71' },
+            { id: 'candidate3', name: 'Sophie Laurent', party: 'Parti C', color: '#9b59b6' }
+        ];
+
+        // Chargement initial
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeApp();
+            setupEventListeners();
+        });
+
+        // Initialisation de l'application
+        function initializeApp() {
+            loadCandidates();
+            setupRealtimeUpdates();
+            
+            // Simuler un chargement initial des résultats
+            setTimeout(() => {
+                updateElectionResults();
+                updateElectionStatus();
+            }, 300);
+        }
+
+        // Configuration des écouteurs d'événements
+        function setupEventListeners() {
+            // Onglets
+            const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+            tabEls.forEach(tabEl => {
+                tabEl.addEventListener('shown.bs.tab', function (event) {
+                    if (event.target.id === 'results-tab') {
+                        updateResults();
+                        updateElectionStatus();
+                        updateVotesHistory();
+                    } else if (event.target.id === 'blockchain-tab') {
+                        fetchAndDisplayBlockchain();
+                    }
+                });
+            });
+            
+            // Formulaire de vote
+            document.getElementById('vote-form').addEventListener('submit', handleVoteSubmission);
+            
+            // Formulaire d'inscription
+            document.getElementById('register-form').addEventListener('submit', handleRegistration);
+            
+            // Vérification du code
+            document.getElementById('verify-code-btn').addEventListener('click', verifyIdentityCode);
+            
+            // Passer la vérification (pour les tests)
+            document.getElementById('skip-verification-btn').addEventListener('click', skipVerification);
+            
+            // Téléchargement des informations d'identification
+            document.getElementById('download-credentials').addEventListener('click', downloadCredentials);
+            
+            // Rafraîchissement manuel des résultats
+            document.getElementById('refresh-results').addEventListener('click', updateElectionResults);
+            
+            // Bouton de bascule pour les mises à jour en temps réel
+            document.getElementById('realtime-toggle').addEventListener('change', function() {
+                toggleRealtimeUpdates(this.checked);
+            });
+            
+            // Bouton de rafraîchissement de la blockchain
+            document.getElementById('refresh-blockchain').addEventListener('click', function() {
+                fetchAndDisplayBlockchain();
+            });
+        }
+
+        // Chargement des candidats
+        function loadCandidates() {
+            const candidatesList = document.getElementById('candidates-list');
+            candidatesList.innerHTML = '';
+            
+            CANDIDATES.forEach(candidate => {
+                const candidateCard = document.createElement('div');
+                candidateCard.className = 'col-md-4 mb-3';
+                candidateCard.innerHTML = `
+                    <div class="card candidate-card" data-candidate-id="${candidate.id}">
+                        <div class="card-body text-center">
+                            <div class="mb-3" style="width: 80px; height: 80px; margin: 0 auto; background-color: ${candidate.color}; 
+                                border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px;">
+                                ${candidate.name.charAt(0)}
+                            </div>
+                            <h5 class="card-title">${candidate.name}</h5>
+                            <p class="card-text">${candidate.party}</p>
+                        </div>
+                    </div>
+                `;
+                candidatesList.appendChild(candidateCard);
+                
+                // Événement de clic pour la sélection du candidat
+                candidateCard.querySelector('.candidate-card').addEventListener('click', function() {
+                    document.querySelectorAll('.candidate-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    selectedCandidate = candidate.id;
+                });
+            });
+        }
+
+        // Gestion de la soumission du vote
+        function handleVoteSubmission(e) {
+            e.preventDefault();
+            
+            // Récupérer les valeurs des champs
+            const voterId = document.getElementById('voter-id').value;
+            const privateKey = document.getElementById('private-key').value;
+            
+            // Vérifier que tous les champs sont remplis
+            if (!voterId || !privateKey || !selectedCandidate) {
+                showError('Veuillez remplir tous les champs et sélectionner un candidat');
+                return;
+            }
+            
+            // Référence au bouton de vote
+            const voteButton = document.getElementById('vote-button');
+            if (!voteButton) {
+                console.error('Bouton de vote non trouvé');
+                return;
+            }
+            
+            // Enregistrer l'état original du bouton
+            const originalText = voteButton.textContent || voteButton.innerText;
+            
+            // Désactiver le bouton et afficher l'indicateur de chargement
+            voteButton.disabled = true;
+            voteButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Vote en cours...';
+            
+            // Fonction pour réinitialiser le bouton
+            function resetButton() {
+                if (voteButton) {
+                    voteButton.disabled = false;
+                    voteButton.innerHTML = originalText;
+                }
+            }
+            
+            // Simuler la signature avec la clé privée (dans une vraie application, cela serait fait cryptographiquement)
+            // Dans un environnement réel, cette opération serait effectuée par une bibliothèque cryptographique côté client
+            const signature = hashString(voterId + selectedCandidate + new Date().getTime());
+            
+            // Créer l'objet de données à envoyer au serveur
+            const voteData = {
+                voter_id: voterId,
+                candidate_id: selectedCandidate,
+                signature: signature,
+                public_key: 'simulated-public-key-' + voterId // Dans une vraie application, ce serait une vraie clé publique
+            };
+            
+            console.log('Envoi du vote au serveur:', voteData);
+            
+            // Envoyer la requête au serveur
+            fetch('/transactions/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(voteData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Erreur lors de l\'envoi du vote');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Réponse du serveur:', data);
+                
+                // Mettre à jour l'interface utilisateur avec les données reçues
+                electionState.votesCast++;
+                electionState.candidateVotes[selectedCandidate] = (electionState.candidateVotes[selectedCandidate] || 0) + 1;
+                electionState.blockchainLength++;
+                
+                // Créer l'entrée d'historique
+                const candidateInfo = CANDIDATES.find(c => c.id === selectedCandidate);
+                const now = new Date();
+                const hashedVoterId = hashString(voterId + now.getTime()).substring(0, 10) + '...';
+                
+                // Ajouter l'entrée à l'historique
+                electionState.voteHistory.unshift({
+                    time: now,
+                    block: electionState.blockchainLength - 1,
+                    voter: hashedVoterId,
+                    candidate: candidateInfo
+                });
+                
+                // Mettre à jour l'interface
+                updateElectionResults();
+                updateElectionStatus();
+                
+                if (document.getElementById('blockchain-tab').classList.contains('active')) {
+                    fetchAndDisplayBlockchain();
+                }
+                
+                // Réinitialiser le formulaire
+                document.getElementById('vote-form').reset();
+                document.querySelectorAll('.candidate-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                selectedCandidate = null;
+                
+                // Afficher un message de succès
+                showSuccess('Vote enregistré avec succès! ' + data.message);
+                
+                // Réinitialiser le bouton
+                resetButton();
+            })
+            .catch(error => {
+                console.error('Erreur lors du vote:', error);
+                showError(error.message || 'Une erreur est survenue lors du vote. Veuillez réessayer.');
+                resetButton();
+            });
+        }
+
+        // Configuration des mises à jour en temps réel
+        function setupRealtimeUpdates() {
+            if (realtimeUpdateInterval) {
+                clearInterval(realtimeUpdateInterval);
+            }
+            
+            realtimeUpdateInterval = setInterval(() => {
+                if (document.getElementById('results-tab').classList.contains('active')) {
+                    updateElectionResults();
+                    updateElectionStatus();
+                }
+            }, 10000); // Mise à jour toutes les 10 secondes
+        }
+        
+        // Gestion de l'inscription avec identité électronique
+        function handleRegistration(e) {
+            e.preventDefault();
+            const name = document.getElementById('voter-name').value;
+            const surname = document.getElementById('voter-surname').value;
+            const idNumber = document.getElementById('voter-id-number').value;
+            const birthdate = document.getElementById('voter-birthdate').value;
+            const email = document.getElementById('voter-email').value;
+            
+            if (!name || !surname || !idNumber || !birthdate || !email) {
+                showError('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            // Afficher un indicateur de chargement
+            const registerButton = document.querySelector('#register-form button[type="submit"]');
+            const originalText = registerButton.innerHTML;
+            registerButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Vérification en cours...';
+            registerButton.disabled = true;
+            
+            // Simulation d'une vérification d'identité
+            setTimeout(() => {
+                // Simuler l'envoi d'un code de vérification
+                const verificationModal = new bootstrap.Modal(document.getElementById('verification-modal'));
+                verificationModal.show();
+                
+                // Réinitialiser le bouton
+                registerButton.innerHTML = originalText;
+                registerButton.disabled = false;
+            }, 300);
+        }
+        
+        // Vérification du code d'identité
+        function verifyIdentityCode() {
+            const verificationCode = document.getElementById('verification-code').value;
+            
+            if (!verificationCode || verificationCode.length !== 6) {
+                showError('Veuillez entrer un code de vérification valide à 6 chiffres');
+                return;
+            }
+            
+            // Simulation de vérification réussie
+            const modal = bootstrap.Modal.getInstance(document.getElementById('verification-modal'));
+            modal.hide();
+            
+            // Compléter l'inscription
+            completeRegistration();
+        }
+        
+        // Passer l'étape de vérification
+        function skipVerification() {
+            // Fermer la boîte de dialogue modale
+            const modal = bootstrap.Modal.getInstance(document.getElementById('verification-modal'));
+            modal.hide();
+            
+            // Afficher une notification de passage de l'étape
+            showNotification('Vérification passée pour les besoins de test');
+            
+            // Compléter l'inscription directement
+            completeRegistration();
+        }
+        
+        // Compléter le processus d'inscription
+        function completeRegistration() {
+            // Récupérer les données du formulaire
+            const name = document.getElementById('voter-name').value;
+            const surname = document.getElementById('voter-surname').value;
+            const idNumber = document.getElementById('voter-id-number').value;
+            
+            // Générer un ID hashé basé sur l'identité
+            const hashedId = hashString(idNumber + name + surname);
+            
+            // Générer une clé publique fictive (dans un vrai système, on générerait une vraie paire de clés)
+            const publicKey = "simulated-public-key-" + hashedId;
+            
+            // Générer une clé privée fictive
+            const privateKey = "-----BEGIN RSA PRIVATE KEY-----\n" +
+                "MIIEowIBAAKCAQEAu8LF/m7QWR9jPCqfbZndN9mLF2M8JMq+xPdLrpNy3Ixport0\n" +
+                "L6hP+2UvP6z/e9AQV9hkOUQZsS1VLvCwznVgzKeMrEiOS6x+A06fL0Jj1U27s41o\n" +
+                "L2iOZxNIT/HJS+K6nT8sDULK5rCrXzKZW0GSG+Al2CJZWtK5hYUfF7pGyNIykMwW\n" +
+                "m0sJwLcGPw1j6KeZRcHoFKZOt4AGxP0LgGlDcqXPa9feFcblD0XXKlGEMXK4tHLb\n" +
+                "ODqD9uWBjyExkVMCf8R42l2QzTZEfxYkrUMAbuS8W/BYrR7hpxjfg6B0onELpPHL\n" +
+                "1yZY75j6GwPU05ZF4vxsZjTQX4b8TkXVnjxLCQIDAQAB\n" +
+                "-----END RSA PRIVATE KEY-----";
+            
+            // Préparer les données à envoyer au serveur
+            const voterData = {
+                voter_id: hashedId,
+                public_key: publicKey
+            };
+            
+            // Afficher un indicateur de chargement
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.id = 'register-loading';
+            loadingIndicator.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div><p class="mt-2">Enregistrement en cours...</p>';
+            loadingIndicator.style.textAlign = 'center';
+            document.getElementById('registration-result').parentNode.insertBefore(loadingIndicator, document.getElementById('registration-result'));
+            
+            // Envoyer la requête au serveur
+            console.log('Envoi des données d\'inscription:', voterData);
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(voterData)
+            })
+            .then(response => {
+                // Supprimer l'indicateur de chargement
+                if (document.getElementById('register-loading')) {
+                    document.getElementById('register-loading').remove();
+                }
+                
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Erreur lors de l\'enregistrement');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Réponse du serveur:', data);
+                
+                // Afficher les informations d'inscription
+                document.getElementById('confirmed-name').textContent = name;
+                document.getElementById('confirmed-surname').textContent = surname;
+                document.getElementById('hashed-voter-id').textContent = hashedId;
+                document.getElementById('generated-private-key').value = privateKey;
+                document.getElementById('registration-result').style.display = 'block';
+                
+                // Incrémenter le nombre de votants inscrits
+                electionState.registeredVoters++;
+                
+                // Afficher un message de succès
+                showSuccess('Identité vérifiée avec succès! Vous êtes maintenant enregistré dans le système et pouvez voter.');
+                
+                // Mettre à jour les statistiques
+                updateElectionStatus();
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'enregistrement:', error);
+                showError(error.message || 'Une erreur est survenue lors de l\'enregistrement. Veuillez réessayer.');
+                
+                // Afficher les informations malgré l'erreur (pour les besoins de démonstration)
+                document.getElementById('confirmed-name').textContent = name;
+                document.getElementById('confirmed-surname').textContent = surname;
+                document.getElementById('hashed-voter-id').textContent = hashedId;
+                document.getElementById('generated-private-key').value = privateKey;
+                document.getElementById('registration-result').style.display = 'block';
+            });
+        }
+        
+        // Téléchargement des informations d'identification
+        function downloadCredentials() {
+            const name = document.getElementById('confirmed-name').textContent;
+            const surname = document.getElementById('confirmed-surname').textContent;
+            const voterId = document.getElementById('hashed-voter-id').textContent;
+            const privateKey = document.getElementById('generated-private-key').value;
+            
+            const credentials = {
+                name: name,
+                surname: surname,
+                voter_id: voterId,
+                private_key: privateKey,
+                date_generated: new Date().toISOString()
+            };
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(credentials, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "votechain_credentials.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            
+            showSuccess('Informations d\'identification téléchargées');
+        }
+        
+        // Mise à jour des résultats de l'élection
+        function updateElectionResults() {
+            const resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = `
+                <div class="text-center py-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2">Chargement des résultats...</p>
+                </div>
+            `;
+            
+            // Simuler une requête API (délai réduit)
+            setTimeout(() => {
+                // Utiliser les données de l'état global
+                const sampleResults = {
+                    results: [
+                        { candidate_id: 'candidate1', name: 'Marie Dupont', party: 'Parti A', votes: electionState.candidateVotes['candidate1'] },
+                        { candidate_id: 'candidate2', name: 'Jean Martin', party: 'Parti B', votes: electionState.candidateVotes['candidate2'] },
+                        { candidate_id: 'candidate3', name: 'Sophie Laurent', party: 'Parti C', votes: electionState.candidateVotes['candidate3'] }
+                    ]
+                };
+                
+                // Calculer le total des votes
+                sampleResults.total_votes = sampleResults.results.reduce((sum, candidate) => sum + candidate.votes, 0);
+                
+                // Trier les résultats par nombre de votes (décroissant)
+                sampleResults.results.sort((a, b) => b.votes - a.votes);
+                
+                // Mettre à jour le conteneur de résultats
+                resultsContainer.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Total des votes:</strong> ${sampleResults.total_votes}
+                    </div>
+                    <div class="row">
+                        ${sampleResults.results.map((result, index) => {
+                            const candidateInfo = CANDIDATES.find(c => c.id === result.candidate_id) || {};
+                            const percentage = (result.votes / sampleResults.total_votes * 100).toFixed(1);
+                            const isWinner = index === 0;
+                            
+                            return `
+                                <div class="col-md-4 mb-3">
+                                    <div class="card ${isWinner ? 'border-success' : ''}">
+                                        ${isWinner ? '<div class="ribbon ribbon-top-right"><span>En tête</span></div>' : ''}
+                                        <div class="card-body text-center">
+                                            <div class="mb-3" style="width: 80px; height: 80px; margin: 0 auto; background-color: ${candidateInfo.color || '#ccc'}; 
+                                                border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px;">
+                                                ${result.name.charAt(0)}
+                                            </div>
+                                            <h5 class="card-title">${result.name}</h5>
+                                            <p class="card-text">${result.party}</p>
+                                            <div class="vote-count">${result.votes}</div>
+                                            <div class="progress mt-2">
+                                                <div class="progress-bar" role="progressbar" 
+                                                    style="width: ${percentage}%; background-color: ${candidateInfo.color || '#ccc'};" 
+                                                    aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">
+                                                    ${percentage}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                // Mettre à jour l'historique des votes
+                updateVotesHistory();
+                
+            }, Math.random() * 300 + 200); // Délai aléatoire entre 500ms et 1500ms
+        }
+        
+        // Mise à jour du statut de l'élection
+        function updateElectionStatus() {
+            // Utiliser les données de l'état global
+            const stats = {
+                registered_voters: electionState.registeredVoters,
+                votes_cast: electionState.votesCast,
+                blockchain_length: electionState.blockchainLength
+            };
+            
+            // Calculer le taux de participation
+            const participation = stats.registered_voters > 0 ? Math.round(stats.votes_cast / stats.registered_voters * 100) : 0;
+            
+            // Mettre à jour les statistiques
+            document.getElementById('stats-voters').textContent = stats.registered_voters;
+            document.getElementById('stats-votes').textContent = stats.votes_cast;
+            document.getElementById('stats-participation').textContent = participation + '%';
+            document.getElementById('stats-blocks').textContent = stats.blockchain_length;
+            document.getElementById('blockchain-length').textContent = stats.blockchain_length;
+            document.getElementById('block-count').textContent = stats.blockchain_length;
+            
+            // Mettre à jour la barre de progression
+            const participationBar = document.getElementById('participation-bar');
+            participationBar.style.width = participation + '%';
+            participationBar.setAttribute('aria-valuenow', participation);
+        }
+        
+        // Fonction pour récupérer et afficher la blockchain
+        function fetchAndDisplayBlockchain() {
+            const blockchainVisualElement = document.querySelector('.blockchain-visualization');
+            blockchainVisualElement.innerHTML = '<div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div></div>';
+            
+            // Simuler une requête API pour récupérer la blockchain (délai réduit)
+            setTimeout(() => {
+                // Dans une application réelle, vous feriez un appel API ici
+                // fetch(`${BASE_URL}/chain`).then(response => response.json()).then(data => { ... });
+                
+                // Si la blockchain n'existe pas encore dans electionState, la créer
+                if (electionState.blockchain.length === 0) {
+                    // Bloc Genesis
+                    electionState.blockchain.push({
+                        index: 0,
+                        timestamp: new Date().getTime() - 3600000, // 1 heure dans le passé
+                        transactions: [],
+                        proof: 1,
+                        previous_hash: "0",
+                        hash: generateRandomHash(true)
+                    });
+                    
+                    // Générer des blocs basés sur le nombre de votes
+                    for (let i = 0; i < electionState.votesCast; i++) {
+                        const prevBlock = electionState.blockchain[electionState.blockchain.length - 1];
+                        const candidateKeys = Object.keys(electionState.candidateVotes);
+                        const randomCandidate = candidateKeys[Math.floor(Math.random() * candidateKeys.length)];
+                        
+                        const transaction = {
+                            voter_id: hashString('voter' + (i+1)).substring(0, 10),
+                            candidate_id: randomCandidate,
+                            timestamp: prevBlock.timestamp + 300000 + Math.floor(Math.random() * 600000) // 5-15 minutes après le bloc précédent
+                        };
+                        
+                        electionState.blockchain.push({
+                            index: prevBlock.index + 1,
+                            timestamp: transaction.timestamp,
+                            transactions: [transaction],
+                            proof: Math.floor(Math.random() * 1000000) + 100000,
+                            previous_hash: prevBlock.hash,
+                            hash: generateRandomHash()
+                        });
+                    }
+                } else if (electionState.blockchain.length < electionState.blockchainLength) {
+                    // Si de nouveaux votes ont été ajoutés, ajouter les blocs manquants
+                    while (electionState.blockchain.length < electionState.blockchainLength) {
+                        const prevBlock = electionState.blockchain[electionState.blockchain.length - 1];
+                        const i = electionState.blockchain.length - 1;
+                        const vote = electionState.voteHistory[electionState.voteHistory.length - 1 - i];
+                        
+                        if (vote) {
+                            const transaction = {
+                                voter_id: vote.voter.replace('...', ''),
+                                candidate_id: vote.candidate.id,
+                                timestamp: vote.time.getTime()
+                            };
+                            
+                            electionState.blockchain.push({
+                                index: prevBlock.index + 1,
+                                timestamp: transaction.timestamp,
+                                transactions: [transaction],
+                                proof: Math.floor(Math.random() * 1000000) + 100000,
+                                previous_hash: prevBlock.hash,
+                                hash: generateRandomHash()
+                            });
+                        }
+                    }
+                }
+                
+                displayBlockchain(electionState.blockchain);
+            }, 300);
+        }
+        
+        // Fonction pour afficher la blockchain
+        function displayBlockchain(chain) {
+            const blockchainVisualElement = document.querySelector('.blockchain-visualization');
+            blockchainVisualElement.innerHTML = '';
+            
+            // Ajouter chaque bloc avec une connexion entre eux
+            chain.forEach((block, index) => {
+                // Créer le bloc
+                const blockElement = document.createElement('div');
+                blockElement.className = `block ${index === 0 ? 'genesis-block' : ''}`;
+                
+                const blockHeader = document.createElement('div');
+                blockHeader.className = 'block-header';
+                blockHeader.innerHTML = `
+                    <span>Bloc #${block.index} ${index === 0 ? '(Genesis)' : ''}</span>
+                    <span><i class="fas fa-clock me-1"></i>${new Date(block.timestamp).toLocaleString()}</span>
+                `;
+                
+                const blockBody = document.createElement('div');
+                blockBody.className = 'block-body';
+                
+                // Informations du bloc
+                let blockInfo = `
+                    <div><strong>Hash:</strong> <span class="block-hash">${block.hash}</span></div>
+                    <div><strong>Hash précédent:</strong> <span class="block-hash">${block.previous_hash}</span></div>
+                    <div><strong>Preuve (Nonce):</strong> <span class="proof-highlight">${block.proof}</span></div>
+                    <div><strong>Transactions:</strong> ${block.transactions.length}</div>
+                `;
+                
+                // Ajouter les transactions s'il y en a
+                if (block.transactions.length > 0) {
+                    blockInfo += '<div class="block-transactions">';
+                    block.transactions.forEach(tx => {
+                        const candidateInfo = CANDIDATES.find(c => c.id === tx.candidate_id) || { name: 'Inconnu', party: 'Inconnu' };
+                        blockInfo += `
+                            <div class="transaction">
+                                <div><strong>Votant:</strong> ${tx.voter_id}...</div>
+                                <div><strong>Vote pour:</strong> ${candidateInfo.name} (${candidateInfo.party})</div>
+                                <div><strong>Horodatage:</strong> ${new Date(tx.timestamp).toLocaleString()}</div>
+                            </div>
+                        `;
+                    });
+                    blockInfo += '</div>';
+                }
+                
+                blockBody.innerHTML = blockInfo;
+                blockElement.appendChild(blockHeader);
+                blockElement.appendChild(blockBody);
+                
+                // Ajouter le bloc à la visualisation
+                blockchainVisualElement.appendChild(blockElement);
+                
+                // Ajouter une connexion si ce n'est pas le dernier bloc
+                if (index < chain.length - 1) {
+                    const connectionElement = document.createElement('div');
+                    connectionElement.className = 'block-connection';
+                    connectionElement.innerHTML = '<i class="fas fa-link"></i>';
+                    blockchainVisualElement.appendChild(connectionElement);
+                }
+            });
+        }
+        
+        // Générer un hash aléatoire pour la simulation
+        function generateRandomHash(isGenesis = false) {
+            const chars = '0123456789abcdef';
+            let hash = '';
+            
+            // Les blocs ont un certain nombre de zéros au début (difficulté)
+            if (isGenesis) {
+                hash = '0000';
+            } else {
+                hash = '000';
+            }
+            
+            // Compléter le reste du hash
+            for (let i = hash.length; i < 64; i++) {
+                hash += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            return hash;
+        }
+        
+        // Mise à jour de l'historique des votes
+        function updateVotesHistory() {
+            const votesHistory = document.getElementById('votes-history');
+            
+            // Historique de votes fixe pour les démonstrations
+            const candidates = CANDIDATES;
+            const now = new Date();
+            let history = '';
+            
+            // Utiliser l'historique des votes de l'état global
+            const voteExamples = electionState.voteHistory;
+            
+            for (const vote of voteExamples) {
+                history += `
+                    <tr>
+                        <td>${vote.time.toLocaleTimeString()}</td>
+                        <td>${vote.block}</td>
+                        <td>${vote.voter}</td>
+                        <td>${vote.candidate.name}</td>
+                    </tr>
+                `;
+            }
+            
+            votesHistory.innerHTML = history;
+        }
+        
+        // Fonctions utilitaires
+        function showSuccess(message) {
+            const alert = document.getElementById('success-alert');
+            document.getElementById('success-message').textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 500);
+        }
+        
+        function showError(message) {
+            const alert = document.getElementById('error-alert');
+            document.getElementById('error-message').textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 500);
+        }
+        
+        function showNotification(message) {
+            // Créer une notification flottante
+            const notification = document.createElement('div');
+            notification.className = 'toast align-items-center text-white bg-primary border-0';
+            notification.setAttribute('role', 'alert');
+            notification.setAttribute('aria-live', 'assertive');
+            notification.setAttribute('aria-atomic', 'true');
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1050';
+            
+            notification.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas fa-info-circle me-2"></i>${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            const toast = new bootstrap.Toast(notification, { delay: 3000 });
+            toast.show();
+            
+            // Supprimer après animation
+            notification.addEventListener('hidden.bs.toast', function () {
+                notification.remove();
+            });
+        }
+        
+        // Fonction de hachage pour les IDs
+        function hashString(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return hash.toString(16).padStart(16, '0');
+        }
+    </script>
+</body>
+</html>
