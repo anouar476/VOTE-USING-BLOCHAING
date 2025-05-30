@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card border-primary mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title text-center mb-0">Bienvenue sur eVoteChain</h3>
+            </div>
+            <div class="card-body">
+                <h5 class="card-subtitle mb-3 text-center">Système de vote électronique sécurisé par blockchain</h5>
+                <p class="lead">
+                    eVoteChain utilise la technologie blockchain pour garantir un processus de vote transparent, immuable et vérifiable cryptographiquement.
+                </p>
+                
+                <h5 class="mt-4">Avantages de notre système :</h5>
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item">
+                        <strong>Sécurité cryptographique</strong> - Chaque vote est signé et vérifié cryptographiquement
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Transparence totale</strong> - La blockchain est publique et vérifiable par tous
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Immuabilité</strong> - Une fois enregistrés, les votes ne peuvent être modifiés
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Résistance à la censure</strong> - Architecture décentralisée sans point de défaillance unique
+                    </li>
+                </ul>
+                
+                <div class="d-grid gap-2 col-md-8 mx-auto">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">S'inscrire pour voter</a>
+                    <a href="{{ url_for('results') }}" class="btn btn-outline-primary btn-lg">Voir les résultats en temps réel</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h4 class="card-title mb-0">Comment ça marche ?</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ol class="list-group list-group-numbered mb-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">Inscription</div>
+                                    Enregistrez-vous avec votre identifiant d'électeur pour recevoir une paire de clés cryptographiques
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">Vote</div>
+                                    Choisissez votre candidat et signez votre vote avec votre clé privée
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">Vérification</div>
+                                    Votre vote est vérifié et ajouté à un bloc dans la blockchain
+                                </div>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div class="ms-2 me-auto">
+                                    <div class="fw-bold">Résultats</div>
+                                    Les résultats sont calculés en temps réel à partir de la blockchain
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

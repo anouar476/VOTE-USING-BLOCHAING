@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}S'inscrire{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Inscription Électeur</h4>
+            </div>
+            <div class="card-body">
+                <p class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Inscrivez-vous avec votre identifiant d'électeur pour obtenir vos clés cryptographiques et participer au vote.
+                </p>
+                
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="mb-3">
+                        <label for="cin" class="form-label">Numéro CIN (Carte d'Identité Nationale)</label>
+                        <input type="text" class="form-control" id="cin" name="cin" required>
+                        <div class="form-text">Entrez votre numéro de CIN. Pour des raisons de confidentialité, seul un hash de ce numéro sera stocké dans la blockchain.</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">S'inscrire et générer mes clés</button>
+                    </div>
+                </form>
+                
+                <div class="mt-4">
+                    <h5>Comment fonctionne l'authentification ?</h5>
+                    <div class="accordion" id="accordionAuth">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                    Génération de clés cryptographiques
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionAuth">
+                                <div class="accordion-body">
+                                    Après inscription, le système vous génère une paire de clés cryptographiques :
+                                    <ul>
+                                        <li><strong>Clé privée :</strong> Gardée secrète, elle sert à signer votre vote</li>
+                                        <li><strong>Clé publique :</strong> Partagée avec le système, elle vérifie votre signature</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                    Signature numérique
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionAuth">
+                                <div class="accordion-body">
+                                    Lors du vote, votre choix est signé avec votre clé privée. Cette signature prouve que :
+                                    <ul>
+                                        <li>Le vote provient bien de vous (authentification)</li>
+                                        <li>Le vote n'a pas été modifié (intégrité)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                    Vérification blockchain
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionAuth">
+                                <div class="accordion-body">
+                                    Le système vérifie votre signature avec votre clé publique avant d'ajouter votre vote à la blockchain. Chaque vote est ainsi validé cryptographiquement.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

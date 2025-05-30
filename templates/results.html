@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}Résultats{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card animate__animated animate__fadeIn">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bx bx-bar-chart-alt-2"></i> Résultats du vote en temps réel</h4>
+            </div>
+            <div class="card-body">
+                {% if total_votes > 0 %}
+                <div class="alert alert-info mb-4 animate__animated animate__fadeInDown">
+                    <i class="bx bx-info-circle me-2"></i> <strong>Votes comptabilisés :</strong> 
+                    <span class="badge bg-primary ms-2 pulse" style="font-size: 1rem;">{{ total_votes }} vote(s)</span>
+                </div>
+                
+                <div class="chart-container animate__animated animate__fadeInUp animate__delay-1s">
+                    <h5 class="text-center mb-3">Répartition des votes</h5>
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <canvas id="resultsChart" 
+                                   data-candidates='{{ candidates | tojson | safe }}'
+                                   data-vote-counts='{{ vote_counts | tojson | safe }}'
+                                   data-total-votes='{{ total_votes }}'>
+                            </canvas>
+                        </div>
+                        <div class="col-lg-4 d-flex align-items-center">
+                            <div class="chart-legend w-100">
+                                {% for candidate in candidates %}
+                                <div class="legend-item d-flex align-items-center mb-3 animate__animated animate__fadeInRight animate__delay-{{ loop.index }}s">
+                                    {% set colors = ['#0d6efd', '#6610f2', '#6f42c1', '#d63384', '#dc3545', '#fd7e14', '#ffc107', '#198754'] %}
+                                    <div class="legend-color me-2" style="width: 15px; height: 15px; border-radius: 3px; background-color: {{ colors[loop.index0 % 8] }};"></div>
+                                    <div class="legend-text"><strong>{{ candidate }}</strong>: {{ vote_counts[candidate] }} vote(s)</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="results-table mt-5 animate__animated animate__fadeInUp animate__delay-2s">
+                    <h5 class="d-flex align-items-center mb-3">
+                        <i class="bx bx-table me-2"></i> Décompte détaillé des votes
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th scope="col" style="width: 5%">#</th>
+                                    <th scope="col" style="width: 40%">Candidat</th>
+                                    <th scope="col" style="width: 25%">Nombre de votes</th>
+                                    <th scope="col" style="width: 30%">Pourcentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for candidate in candidates %}
+                                <tr class="animate__animated animate__fadeIn animate__delay-{{ loop.index }}s">
+                                    <th scope="row">{{ loop.index }}</th>
+                                    <td>
+                                        <strong>{{ candidate }}</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ vote_counts[candidate] }}</span>
+                                    </td>
+                                    <td>
+                                        {% if total_votes > 0 %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                 style="width: {{ (vote_counts[candidate] / total_votes * 100) | round(2) }}%;"
+                                                 aria-valuenow="{{ (vote_counts[candidate] / total_votes * 100) | round(2) }}" 
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                                {{ (vote_counts[candidate] / total_votes * 100) | round(2) }}%
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                                0%
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-warning animate__animated animate__pulse animate__infinite">
+                    <div class="d-flex align-items-center">
+                        <i class="bx bx-time bx-lg me-3"></i>
+                        <div>
+                            <h5 class="alert-heading">Aucun vote pour le moment</h5>
+                            <p class="mb-0"><strong>Le scrutin est ouvert</strong> mais aucun vote n'a encore été enregistré. Les résultats s'afficheront ici dès que les électeurs commenceront à voter.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mt-5 animate__animated animate__fadeIn animate__delay-3s">
+                    <div class="card">
+                        <div class="card-header bg-info bg-opacity-10">
+                            <h5 class="mb-0 d-flex align-items-center">
+                                <i class="bx bx-shield me-2"></i> Sécurité et transparence
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Comment garantissons-nous l'intégrité des résultats ?</h6>
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <ul class="list-group list-group-flush mt-3">
+                                        <li class="list-group-item d-flex">
+                                            <i class="bx bx-check-circle text-success me-2"></i>
+                                            <span>Tous les votes sont <strong>stockés dans notre blockchain</strong> et peuvent être vérifiés par n'importe qui.</span>
+                                        </li>
+                                        <li class="list-group-item d-flex">
+                                            <i class="bx bx-check-circle text-success me-2"></i>
+                                            <span>Chaque vote est <strong>signé cryptographiquement</strong>, ce qui garantit son authenticité et son intégrité.</span>
+                                        </li>
+                                        <li class="list-group-item d-flex">
+                                            <i class="bx bx-check-circle text-success me-2"></i>
+                                            <span>La blockchain assure que <strong>les votes ne peuvent pas être modifiés</strong> une fois enregistrés.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <i class="bx bx-coin-stack bx-tada" style="font-size: 5rem; color: #0d6efd;"></i>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
+                                <a href="{{ url_for('view_blockchain') }}" class="btn btn-primary">
+                                    <i class="bx bx-link-external me-2"></i> Consulter la blockchain
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if total_votes > 0 %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('resultsChart').getContext('2d');
+        
+        // Get the chart element
+        const chartElement = document.getElementById('resultsChart');
+        
+        // Read data from data attributes
+        const candidatesList = JSON.parse(chartElement.dataset.candidates);
+        const voteCountsObj = JSON.parse(chartElement.dataset.voteCounts);
+        const totalVotes = parseInt(chartElement.dataset.totalVotes, 10);
+        
+        // Function to safely access vote counts
+        function getVoteCount(candidate) {
+            return voteCountsObj[candidate] || 0;
+        }
+        
+        // Generate colors for the chart with gradient
+        const generateGradientColors = function(count) {
+            const baseColors = [
+                { start: '#0d6efd', end: '#0a58ca' },
+                { start: '#6610f2', end: '#520dc2' },
+                { start: '#6f42c1', end: '#5a32a3' },
+                { start: '#d63384', end: '#ab296a' },
+                { start: '#dc3545', end: '#b02a37' },
+                { start: '#fd7e14', end: '#ca6510' },
+                { start: '#ffc107', end: '#cc9a06' },
+                { start: '#198754', end: '#146c43' }
+            ];
+            
+            // Create gradients
+            const gradients = [];
+            for (let i = 0; i < count; i++) {
+                const colorSet = baseColors[i % baseColors.length];
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                gradient.addColorStop(0, colorSet.start);
+                gradient.addColorStop(1, colorSet.end);
+                gradients.push(gradient);
+            }
+            
+            return gradients;
+        };
+        
+        // Register Chart.js plugins
+        Chart.register(ChartDataLabels);
+        
+        // Animate the counting of votes
+        const animateValue = (obj, start, end, duration) => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        };
+        
+        // Create the chart with animation
+        const resultsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: candidatesList,
+                datasets: [{
+                    label: 'Votes',
+                    data: candidatesList.map(function(candidate) { return getVoteCount(candidate); }),
+                    backgroundColor: generateGradientColors(candidatesList.length),
+                    borderWidth: 0,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    maxBarThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            precision: 0,
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: {
+                            size: 16
+                        },
+                        bodyFont: {
+                            size: 14
+                        },
+                        padding: 15,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const percentage = (value / totalVotes) * 100;
+                                return `Votes: ${value} (${percentage.toFixed(2)}%)`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            weight: 'bold'
+                        },
+                        formatter: function(value) {
+                            return value > 0 ? value : '';
+                        },
+                        anchor: 'center',
+                        align: 'center',
+                        offset: 0
+                    }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                }
+            }
+        });
+        
+        // Animate the total votes counter
+        const voteCountBadge = document.querySelector('.badge.pulse');
+        if (voteCountBadge) {
+            animateValue(voteCountBadge, 0, totalVotes, 1500);
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

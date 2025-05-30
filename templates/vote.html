@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Voter{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Voter pour un candidat</h4>
+            </div>
+            <div class="card-body">
+                {% if session.cin %}
+                <div class="alert alert-info mb-4">
+                    <strong>Électeur :</strong> {{ session.cin }}
+                </div>
+                
+                <form method="POST" action="{{ url_for('vote') }}">
+                    <div class="mb-4">
+                        <h5>Choisissez votre candidat :</h5>
+                        
+                        {% for candidate in candidates %}
+                        <div class="form-check mb-3 p-3 border rounded{% if loop.first %} border-primary{% endif %}">
+                            <input class="form-check-input" type="radio" name="candidate" id="candidate{{ loop.index }}" value="{{ candidate }}" {% if loop.first %}checked{% endif %}>
+                            <label class="form-check-label" for="candidate{{ loop.index }}">
+                                <strong>{{ candidate }}</strong>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Important :</strong> Votre vote sera signé cryptographiquement avec votre clé privée et enregistré de façon permanente dans la blockchain. Une fois confirmé, il ne pourra pas être modifié.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Confirmer mon vote</button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-warning">
+                    <strong>Attention !</strong> Vous devez d'abord vous inscrire pour pouvoir voter.
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary">S'inscrire</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Blockchain{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Explorer la Blockchain</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Blocs</h5>
+                                <h3 class="card-text">{{ total_blocks }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Électeurs inscrits</h5>
+                                <h3 class="card-text">{{ registered_voters }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Votes enregistrés</h5>
+                                <h3 class="card-text">{{ votes_cast }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="blockchain-explorer">
+                    {% for block in chain %}
+                    <div class="blockchain-container mb-4 {% if block.type == 'registration' %}border-left border-info{% elif block.type == 'vote' %}border-left border-success{% endif %}">
+                        <h5 class="card-title">
+                            Bloc #{{ block.index }}
+                            {% if block.type == 'genesis' %}
+                                <span class="badge bg-secondary">Genesis</span>
+                            {% elif block.type == 'registration' %}
+                                <span class="badge bg-info">Inscription</span>
+                            {% elif block.type == 'vote' %}
+                                <span class="badge bg-success">Vote</span>
+                            {% else %}
+                                <span class="badge bg-primary">{{ block.type }}</span>
+                            {% endif %}
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <strong>Horodatage :</strong>
+                                    <span>{{ block.timestamp|round(0)|int|string }}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Preuve de travail :</strong>
+                                    <span>{{ block.proof }}</span>
+                                </div>
+                                <div>
+                                    <strong>Hash précédent :</strong>
+                                    <div class="text-break">
+                                        <code>{{ block.previous_hash }}</code>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <strong>Nombre de transactions :</strong>
+                                    <span>{{ block.transactions|length }}</span>
+                                </div>
+                                {% if block.transactions %}
+                                <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#blockTransactions{{ block.index }}">
+                                    Voir les transactions
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if block.transactions %}
+                        <div class="collapse mt-3" id="blockTransactions{{ block.index }}">
+                            <h6>Transactions du bloc :</h6>
+                            {% for tx in block.transactions %}
+                                {% if tx.type == 'registration' %}
+                                <div class="vote-card border-left border-info">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div><strong>Type :</strong> <span class="badge bg-info">Inscription</span></div>
+                                            <div><strong>CIN (hash) :</strong> {{ tx.cin_hash[:10] }}...</div>
+                                            <div><strong>Horodatage :</strong> {{ tx.timestamp|round(0)|int|string }}</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div>
+                                                <strong>Clé publique :</strong>
+                                                <div class="text-truncate">
+                                                    <small><code>{{ tx.public_key[:20] }}...</code></small>
+                                                </div>
+                                            </div>
+                                            <div><strong>ID Transaction :</strong> {{ tx.id[:8] }}...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% elif tx.type == 'vote' %}
+                                <div class="vote-card border-left border-success">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div><strong>Type :</strong> <span class="badge bg-success">Vote</span></div>
+                                            <div><strong>CIN (hash) :</strong> {{ tx.cin_hash[:10] }}...</div>
+                                            <div><strong>Candidat :</strong> {{ tx.candidate }}</div>
+                                            <div><strong>Horodatage :</strong> {{ tx.timestamp|round(0)|int|string }}</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div>
+                                                <strong>Signature :</strong>
+                                                <div class="text-truncate">
+                                                    <small><code>{{ tx.signature[:20] }}...</code></small>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <strong>Clé publique :</strong>
+                                                <div class="text-truncate">
+                                                    <small><code>{{ tx.public_key[:20] }}...</code></small>
+                                                </div>
+                                            </div>
+                                            <div><strong>ID Transaction :</strong> {{ tx.id[:8] }}...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="vote-card">
+                                    <div><strong>Type :</strong> {{ tx.type }}</div>
+                                    <div><strong>ID :</strong> {{ tx.id }}</div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-4">
+                    <h5>Comment fonctionne notre blockchain ?</h5>
+                    <p>
+                        Notre blockchain est une chaîne de blocs où chaque bloc contient :
+                    </p>
+                    <ul>
+                        <li><strong>Index :</strong> Numéro du bloc dans la chaîne</li>
+                        <li><strong>Horodatage :</strong> Date et heure de création du bloc</li>
+                        <li><strong>Votes :</strong> Transactions (votes) contenues dans le bloc</li>
+                        <li><strong>Preuve :</strong> Valeur calculée par l'algorithme de preuve de travail</li>
+                        <li><strong>Hash précédent :</strong> Empreinte du bloc précédent, garantissant l'intégrité de la chaîne</li>
+                    </ul>
+                    <p>
+                        Cette structure rend la blockchain immuable : si un bloc est modifié, tous les hachages des blocs suivants deviennent invalides.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
